@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Simon Types</title>
+    <link href="https://fonts.googleapis.com/css?family=Inconsolata" rel="stylesheet">
+
+    <style>
+        body {
+            background: #444;
+        }
+
+        #screen {
+            background: yellowgreen;
+            padding: 20px;
+            width: 80%;
+            max-width: 500px;
+            margin: 50px auto;
+            font-family: 'Inconsolata', monospace;
+            border: 10px solid #000;
+            font-size: 28px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            font-weight: bold;
+            text-align: center;
+
+        }
+        #info,#title{
+            color:#fff;
+            text-align: center;
+            font-family: 'Inconsolata', monospace;
+        }
+        #title {
+            text-transform: uppercase;
+            opacity: 0.2;
+            letter-spacing: 10px;
+            margin-top: 10%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1 id="title">Simon Types</h1>
+    <div id="screen"></div>
+    <p id="info">Press 'Space' key to Restart</p>
+
+    <script>
+
+        var state = 'init';
+        var alphabets = 'abcdefghijklmnopqrstuvwxyz'.split('');
+        var numbers = '12345'.split('');
+        var screen = document.querySelector('#screen');
+        var current_level = 0;
+        var current_code = '';
+        var entered_code = '';
+        var score = 0;
+
+        function generateCode(level) {
+            state = 'generate_code';
+            var code = '';
+            while (code.length < level+4) {
+                var char = alphabets[Math.floor(Math.random() * 26)];
+                if (code.indexOf(char) == -1) {
+                    code += char;
+                }
+            }
+            screen.innerHTML = "[[[  "+code+"  ]]]";
+            setTimeout(function () {
+                screen.innerHTML = "[[  "+code+"  ]]";
+            }, 500);
+            setTimeout(function () {
+                screen.innerHTML = "[  "+code+"  ]";
+            }, 1000);
+            setTimeout(function () {
+                screen.innerHTML = "Enter The Code";
+                state = 'read_code';
+            }, 2000);
+            entered_code = '';
+            current_code = code;
+        }
+
+        screen.innerHTML = "Press Enter to Start";
+
+        document.addEventListener('keypress', function (e) {
+
+            if(e.code=="Space") {
+                location.reload();
+            }
+
+            else if (state == 'init' && e.key == "Enter") {
+                state = 'started';
+                screen.innerHTML = "Loading ...";
+            }
+
+            if (state == 'started') {
+                setTimeout(function () {
+                    state = 'select_level';
+                    screen.innerHTML = "Select Level : 1 to 5";
+                }, 500);
+            }
+
+
+            else if (state == 'select_level') {
+                if (numbers.indexOf(e.key) != -1) {
+                    current_level = parseInt(e.key);
+                    generateCode(current_level);
+                }
+            }
+
+            else if (state == "read_code" && e.key != "Enter") {
+                entered_code += e.key;
+                screen.innerHTML = entered_code;
+            }
+
+            else if (state == "read_code" && e.key == "Enter") {
+                if (entered_code.toLowerCase() == current_code) {
+                    score++;
+                    if (score % 5 == 0) {
+                        current_level++;
+                    }
+                    generateCode(current_level);
+                }
+                else {
+                    screen.innerHTML = "Game Over. Score : " + score;
+                }
+            }
+
+
+        });
+
+
+    </script>
+
+
+
+</body>
+
+</html>
