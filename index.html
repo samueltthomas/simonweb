@@ -94,17 +94,13 @@
             else if (state == 'init' && e.key == "Enter") {
                 state = 'started';
                 screen.innerHTML = "Loading ...";
-            }
-
-            if (state == 'started') {
                 setTimeout(function () {
                     state = 'select_level';
                     screen.innerHTML = "Select Level : 1 to 5";
                 }, 500);
             }
 
-
-            else if (state == 'select_level') {
+            if (state == 'select_level') {
                 if (numbers.indexOf(e.key) != -1) {
                     current_level = parseInt(e.key);
                     generateCode(current_level);
